@@ -1,0 +1,1357 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>I2CTool UI Prototype</title>
+  <style>
+    :root {
+      --bg: #07131f;
+      --surface: #0e1f32;
+      --surface-alt: #13253a;
+      --surface-muted: #0b1a2a;
+      --primary: #21c5b6;
+      --primary-soft: rgba(33, 197, 182, 0.16);
+      --accent: #4ba6ff;
+      --danger: #ff6b6b;
+      --warning: #f6c85f;
+      --fg: #f1f5f9;
+      --fg-soft: #92a7be;
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 24px 48px rgba(2, 10, 22, 0.46);
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --font-body: "Segoe UI", "Inter", "Roboto", "Helvetica", sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+    }
+
+    body.theme-light {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-alt: #eef2f8;
+      --surface-muted: #e4ecf5;
+      --primary: #087f8c;
+      --primary-soft: rgba(8, 127, 140, 0.14);
+      --accent: #246bce;
+      --danger: #d64550;
+      --warning: #d3a526;
+      --fg: #0f172a;
+      --fg-soft: #4c6078;
+      --border: rgba(15, 23, 42, 0.12);
+      --shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 32px;
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      width: min(1320px, 100%);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background: linear-gradient(150deg, rgba(14, 31, 50, 0.85), rgba(7, 19, 31, 0.95));
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+    }
+
+    .app-header {
+      padding: 24px 32px 0 32px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .title-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .title-block span {
+      font-size: 13px;
+      color: var(--fg-soft);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chip {
+      padding: 6px 14px;
+      border-radius: 14px;
+      background: rgba(33, 197, 182, 0.18);
+      color: var(--primary);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    body.theme-light .chip {
+      background: rgba(8, 127, 140, 0.12);
+    }
+
+    .header-search {
+      flex: 1;
+      position: relative;
+    }
+
+    .header-search input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--fg);
+      font-size: 14px;
+    }
+
+    .header-search span {
+      position: absolute;
+      top: 50%;
+      left: 16px;
+      transform: translateY(-50%);
+      color: var(--fg-soft);
+      font-size: 14px;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .ghost-btn, .primary-btn {
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 160ms ease;
+    }
+
+    .ghost-btn {
+      background: var(--surface);
+      color: var(--fg);
+      border-color: var(--border);
+    }
+
+    .primary-btn {
+      background: var(--primary);
+      color: #042028;
+    }
+
+    .ghost-btn:hover, .primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+    }
+
+    .app-body {
+      display: grid;
+      grid-template-columns: 300px 1fr 320px;
+      gap: 22px;
+      padding: 24px 32px 36px 32px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .muted {
+      color: var(--fg-soft);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .section-divider {
+      border: 0;
+      border-top: 1px dashed var(--border);
+      margin: 8px 0 4px;
+    }
+    .adapter-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .adapter-card {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: var(--surface-muted);
+      border: 1px solid var(--border);
+      display: grid;
+      gap: 6px;
+      cursor: pointer;
+      transition: border 140ms ease, background 140ms ease;
+    }
+
+    .adapter-card.active {
+      border-color: var(--primary);
+      background: rgba(33, 197, 182, 0.14);
+    }
+
+    .adapter-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--fg-soft);
+      letter-spacing: 0.03em;
+    }
+
+    .speed-control {
+      display: grid;
+      gap: 10px;
+    }
+
+    .speed-control input[type=range] {
+      width: 100%;
+      accent-color: var(--primary);
+    }
+
+    .scan-results, .profile-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .scan-chip, .profile-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface-muted);
+      font-size: 13px;
+    }
+
+    .profile-item button {
+      border: none;
+      background: transparent;
+      color: var(--accent);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .badge-soft {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--fg-soft);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 4px;
+    }
+
+    .tab {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--fg-soft);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 120ms ease, color 120ms ease, transform 120ms ease;
+    }
+
+    .tab:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .tab.is-active {
+      background: var(--primary);
+      color: #042028;
+      transform: translateY(-1px);
+    }
+
+    .pane {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 26px;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+    }
+
+    .pane.is-active {
+      display: flex;
+    }
+
+    .pane-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .pane-header h3 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .tag-line {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 4px 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--fg-soft);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .stat-block {
+      background: var(--surface-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .stat-block strong {
+      font-size: 16px;
+    }
+
+    .stat-block span {
+      font-size: 12px;
+      color: var(--fg-soft);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      background: var(--surface-muted);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      padding: 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .field label {
+      font-weight: 600;
+      color: var(--fg-soft);
+    }
+
+    .field input, .field select, .field textarea {
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--fg);
+      font-size: 13px;
+      font-family: var(--font-mono);
+      resize: vertical;
+      min-height: 42px;
+    }
+
+    .field textarea {
+      min-height: 84px;
+    }
+
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 0;
+    }
+
+    .form-grid .control-row {
+      grid-column: span 4;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .chip-toggle {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--fg-soft);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .chip-toggle.is-active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(33, 197, 182, 0.12);
+    }
+
+    .switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--fg-soft);
+      cursor: pointer;
+    }
+
+    .switch span {
+      display: inline-block;
+      width: 36px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      position: relative;
+    }
+
+    .switch span::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--fg-soft);
+      transition: transform 140ms ease, background 140ms ease;
+    }
+
+    .switch.is-active span {
+      background: rgba(33, 197, 182, 0.22);
+    }
+
+    .switch.is-active span::after {
+      transform: translateX(14px);
+      background: var(--primary);
+    }
+
+    .pane-split {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 18px;
+    }
+
+    .sequence {
+      display: grid;
+      gap: 14px;
+    }
+
+    .sequence-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sequence-item {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--surface-muted);
+      padding: 12px 14px;
+      display: grid;
+      gap: 4px;
+      cursor: pointer;
+      text-align: left;
+      transition: border 140ms ease, background 140ms ease;
+    }
+
+    .sequence-item strong {
+      font-size: 13px;
+    }
+
+    .sequence-item span {
+      font-size: 12px;
+      color: var(--fg-soft);
+    }
+
+    .sequence-item.is-active {
+      border-color: var(--primary);
+      background: rgba(33, 197, 182, 0.14);
+    }
+
+    .sequence-detail {
+      background: var(--surface-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .sequence-detail pre {
+      margin: 0;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      overflow: auto;
+      max-height: 160px;
+    }
+
+    .result-panels {
+      display: grid;
+      gap: 12px;
+    }
+
+    .result-card {
+      background: var(--surface-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .result-card h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .result-card pre {
+      margin: 0;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      overflow: auto;
+      max-height: 180px;
+    }
+
+    .result-meta {
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--fg-soft);
+    }
+
+    .right-panel-section {
+      background: var(--surface-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .quick-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .quick-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 12px;
+    }
+
+    .quick-item button {
+      border: none;
+      background: transparent;
+      color: var(--accent);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .log-feed {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 12px;
+      display: grid;
+      gap: 6px;
+      max-height: 180px;
+      overflow: auto;
+    }
+
+    .log-line {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+    }
+
+    .log-line time {
+      color: var(--fg-soft);
+      min-width: 68px;
+    }
+
+    .log-line[data-level="error"] span {
+      color: var(--danger);
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 32px;
+      background: rgba(0, 0, 0, 0.25);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 12px;
+      color: var(--fg-soft);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(33, 197, 182, 0.22);
+      color: var(--primary);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(4, 12, 20, 0.62);
+      z-index: 20;
+    }
+
+    .modal {
+      width: min(440px, 100%);
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 16px;
+    }
+
+    .modal header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal header h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      border: none;
+      background: transparent;
+      color: var(--fg-soft);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .modal pre {
+      margin: 0;
+      background: var(--surface-muted);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      max-height: 220px;
+      overflow: auto;
+    }
+
+    .modal footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    @media (max-width: 1180px) {
+      .app-body {
+        grid-template-columns: 280px 1fr 280px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      body {
+        padding: 18px;
+      }
+
+      .app-body {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-right {
+        order: 3;
+      }
+    }
+  </style>
+</head>
+<body class="theme-dark">
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="title-row">
+        <div class="title-badge">I2C</div>
+        <div class="title-block">
+          <h1>I2CTool Prototype</h1>
+          <span>Two-tab workspace focused on general read/write and EEPROM authoring.</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="chip-row">
+          <div class="chip">Mode: General R/W</div>
+          <div class="chip">Adapter: CH341</div>
+          <div class="chip">Profile: 24C256</div>
+        </div>
+        <div class="header-search">
+          <span>?</span>
+          <input type="search" placeholder="Jump to command or register (Ctrl+K)" />
+        </div>
+        <div class="header-buttons">
+          <button class="ghost-btn" data-role="theme-toggle">Use Light Theme</button>
+          <button class="primary-btn">Synchronize Presets</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-body">
+      <aside class="panel">
+        <h2>Adapters</h2>
+        <p class="muted">Pick the hardware endpoint and tune bus speed before launching commands.</p>
+        <div class="adapter-grid" role="radiogroup">
+          <div class="adapter-card active" role="radio" aria-checked="true" data-role="adapter-card">
+            <strong>USB - CH341 (SN: 1FD4)</strong>
+            <div class="adapter-meta">
+              <span>Ready</span>
+              <span>400 kHz</span>
+            </div>
+          </div>
+          <div class="adapter-card" role="radio" aria-checked="false" data-role="adapter-card">
+            <strong>USB - CH347 (Bench)</strong>
+            <div class="adapter-meta">
+              <span>Idle</span>
+              <span>1 MHz</span>
+            </div>
+          </div>
+          <div class="adapter-card" role="radio" aria-checked="false" data-role="adapter-card">
+            <strong>FTDI Bridge</strong>
+            <div class="adapter-meta">
+              <span>Offline</span>
+              <span>--</span>
+            </div>
+          </div>
+        </div>
+
+        <hr class="section-divider" />
+        <div class="speed-control">
+          <div class="tag-line">
+            <span class="tag">Bus speed</span>
+            <span class="muted">400 kHz</span>
+          </div>
+          <input type="range" min="50" max="1200" value="400" step="50" />
+          <div class="tag-line">
+            <span class="muted">Rise time guard</span>
+            <span class="badge-soft">Adapter managed</span>
+          </div>
+        </div>
+
+        <hr class="section-divider" />
+        <h2>Scan Results</h2>
+        <div class="scan-results">
+          <div class="scan-chip">
+            <strong>0x50</strong>
+            <span class="badge-soft">EEPROM</span>
+          </div>
+          <div class="scan-chip">
+            <strong>0x68</strong>
+            <span class="badge-soft">RTC</span>
+          </div>
+          <div class="scan-chip">
+            <strong>0x75</strong>
+            <span class="badge-soft">Sensor</span>
+          </div>
+        </div>
+
+        <hr class="section-divider" />
+        <h2>Command Presets</h2>
+        <div class="profile-list">
+          <div class="profile-item">
+            <span>Quick read 16 bytes</span>
+            <button>Load</button>
+          </div>
+          <div class="profile-item">
+            <span>Write config register</span>
+            <button>Load</button>
+          </div>
+          <div class="profile-item">
+            <span>New preset</span>
+            <button>+ Create</button>
+          </div>
+        </div>
+      </aside>
+      <section class="workspace">
+        <div class="tabs" role="tablist">
+          <button class="tab is-active" role="tab" aria-selected="true" data-target="pane-general">General R/W</button>
+          <button class="tab" role="tab" aria-selected="false" data-target="pane-eeprom">EEPROM Writer</button>
+        </div>
+
+        <div class="pane is-active" id="pane-general" data-pane>
+          <div class="pane-header">
+            <div>
+              <h3>General Read and Write</h3>
+              <p class="muted">Craft single transactions, queue sequences, and monitor responses in real time.</p>
+            </div>
+            <div class="tag-line">
+              <span class="tag">Connected</span>
+              <span class="tag">Address width: 16-bit</span>
+              <span class="tag">Auto poll enabled</span>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="stat-block">
+              <span>Last command</span>
+              <strong>READ 0x50 @ 0x0010</strong>
+              <span>16 bytes returned at 12:44:03</span>
+            </div>
+            <div class="stat-block">
+              <span>Auto poll cadence</span>
+              <strong>2.0 s</strong>
+              <span>Stop when 3 consecutive errors</span>
+            </div>
+            <div class="stat-block">
+              <span>Queue</span>
+              <strong>3 steps</strong>
+              <span>Looped sequence ends after 5 iterations</span>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="general-adapter">Adapter</label>
+              <select id="general-adapter">
+                <option>CH341</option>
+                <option>CH347</option>
+                <option>FTDI Bridge</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="general-device">Device address (7-bit)</label>
+              <input id="general-device" value="0x50" />
+            </div>
+            <div class="field">
+              <label for="general-register">Register offset</label>
+              <input id="general-register" value="0x0010" />
+            </div>
+            <div class="field">
+              <label for="general-width">Address width</label>
+              <select id="general-width">
+                <option>8-bit</option>
+                <option selected>16-bit</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="general-format">Payload format</label>
+              <select id="general-format">
+                <option selected>Hex bytes</option>
+                <option>ASCII</option>
+                <option>Decimal</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="general-read-length">Read length</label>
+              <input id="general-read-length" value="16" />
+            </div>
+            <div class="field">
+              <label for="general-write">Write payload</label>
+              <textarea id="general-write">12 7A 90 44 00 00 45 4E</textarea>
+            </div>
+            <div class="field">
+              <label for="general-repeat">Loop count</label>
+              <input id="general-repeat" value="5" />
+            </div>
+            <div class="control-row">
+              <button class="primary-btn">Send Read</button>
+              <button class="ghost-btn">Send Write</button>
+              <button class="ghost-btn" data-role="open-preview">Add to Queue</button>
+              <button class="chip-toggle is-active">Stop on NACK</button>
+              <button class="chip-toggle">Ignore CRC</button>
+              <label class="switch is-active" data-role="auto-poll">
+                <span></span>
+                Auto poll
+              </label>
+            </div>
+          </div>
+
+          <div class="pane-split">
+            <div class="sequence">
+              <div class="sequence-header">
+                <h4 style="margin:0;font-size:14px;font-weight:700;">Execution timeline</h4>
+                <p class="muted">Select a step to inspect payload and expected response.</p>
+              </div>
+              <div class="sequence-list">
+                <button class="sequence-item is-active" data-role="sequence-item" data-title="Step 1 - Read header" data-detail="READ addr=0x50 reg=0x0010 len=16" data-payload="-- seq[0] READ --\nstart=0x0010 len=16\nflags: stop-on-nack" data-expected="4A 46 49 46 00 01 01 01 00 60 00 60 00 00 FF E0">
+                  <strong>Step 1 - Read header</strong>
+                  <span>READ 0x50 @ 0x0010 len 16</span>
+                </button>
+                <button class="sequence-item" data-role="sequence-item" data-title="Step 2 - Write config" data-detail="WRITE addr=0x50 reg=0x0020 len=8" data-payload="-- seq[1] WRITE --\nstart=0x0020 len=8\ndata: 12 7A 90 44 00 00 45 4E" data-expected="ACK after page write">
+                  <strong>Step 2 - Write config</strong>
+                  <span>WRITE 8 bytes, wait 5 ms</span>
+                </button>
+                <button class="sequence-item" data-role="sequence-item" data-title="Step 3 - Verify" data-detail="READ addr=0x50 reg=0x0020 len=8" data-payload="-- seq[2] VERIFY --\nstart=0x0020 len=8\nmode: compare previous write" data-expected="12 7A 90 44 00 00 45 4E">
+                  <strong>Step 3 - Verify write</strong>
+                  <span>Compare response with staged payload</span>
+                </button>
+              </div>
+              <div class="sequence-detail">
+                <strong data-bind="sequence-title">Step 1 - Read header</strong>
+                <span data-bind="sequence-detail">READ addr=0x50 reg=0x0010 len=16</span>
+                <pre data-bind="sequence-payload">-- seq[0] READ --
+start=0x0010 len=16
+flags: stop-on-nack</pre>
+                <div class="result-meta">
+                  <span>Expected: <code data-bind="sequence-expected" style="font-family:var(--font-mono);">4A 46 49 46 00 01 01 01 00 60 00 60 00 00 FF E0</code></span>
+                  <span>Retry if mismatch, up to 3 attempts.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="result-panels">
+              <div class="result-card">
+                <h4>Last response</h4>
+                <pre data-bind="last-response">Addr : 0x0010
+Bytes: 4A 46 49 46 00 01 01 01 00 60 00 60 00 00 FF E0
+ASCII: JFIF....`.
+CRC16: 0x2AF3 (pass)
+Latency: 1.2 ms</pre>
+                <div class="result-meta">
+                  <span>Decoded as: JPEG header</span>
+                  <span>Captured at 12:44:03</span>
+                </div>
+              </div>
+              <div class="result-card">
+                <h4>Bitfield inspector</h4>
+                <pre>Byte 0: 0x4A  -> Flags[7:4]=0x4, Flags[3:0]=0xA
+Byte 5: 0x01  -> Mode enable
+Byte 6: 0x01  -> Retention enabled
+Byte 14: 0xFF -> Cal shift high
+Byte 15: 0xE0 -> Cal shift low
+                </pre>
+                <div class="result-meta">
+                  <span>Interpretation profile: custom.yaml</span>
+                  <span>Override via scripting palette</span>
+                </div>
+              </div>
+              <div class="result-card">
+                <h4>Sequence health</h4>
+                <div class="result-meta">
+                  <span>Pass: 12 - Fail: 1 - Skipped: 0</span>
+                  <span>Last failure: Verify write (iteration 2)</span>
+                  <span>Scoped variables: addr_base=0x0010, poll_window=2s</span>
+                </div>
+                <div class="control-row" style="gap:8px;flex-wrap:wrap;">
+                  <button class="ghost-btn">Pause auto poll</button>
+                  <button class="ghost-btn">Export CSV</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pane" id="pane-eeprom" data-pane>
+          <div class="pane-header">
+            <div>
+              <h3>EEPROM Writer</h3>
+              <p class="muted">Stage multi-page writes, verify with checksums, and archive golden images.</p>
+            </div>
+            <div class="tag-line">
+              <span class="tag">Template: 24C256</span>
+              <span class="tag">Page size: 64 bytes</span>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="stat-block">
+              <span>Selected image</span>
+              <strong>factory_patch.bin</strong>
+              <span>Checksum CRC32: 0x9F3A12BC</span>
+            </div>
+            <div class="stat-block">
+              <span>Planned operations</span>
+              <strong>4 jobs</strong>
+              <span>2 writes - 1 verify - 1 diff export</span>
+            </div>
+            <div class="stat-block">
+              <span>Estimated time</span>
+              <strong>01m 24s</strong>
+              <span>Including write cycle delays</span>
+            </div>
+          </div>
+
+          <div class="pane-split" style="grid-template-columns:1.4fr 1fr;">
+            <div class="sequence">
+              <div class="sequence-list">
+                <button class="sequence-item is-active" data-role="eeprom-item">
+                  <strong>Job #41 - Page write</strong>
+                  <span>Addr 0x0000 len 256 - Verify CRC16</span>
+                </button>
+                <button class="sequence-item" data-role="eeprom-item">
+                  <strong>Job #42 - Page write</strong>
+                  <span>Addr 0x0100 len 128 - Verify byte compare</span>
+                </button>
+                <button class="sequence-item" data-role="eeprom-item">
+                  <strong>Job #43 - Verify sweep</strong>
+                  <span>Addr 0x0000 len 384 - Export mismatch report</span>
+                </button>
+                <button class="sequence-item" data-role="eeprom-item">
+                  <strong>Add new job</strong>
+                  <span>Select preset or compose custom</span>
+                </button>
+              </div>
+              <div class="sequence-detail">
+                <strong>Job #41 - Page write</strong>
+                <span>Double buffer enabled, expect 4 ms write cycle</span>
+                <pre>Payload source: factory_patch.bin
+Address span : 0x0000 - 0x00FF
+Verify mode  : CRC16-IBM
+On failure   : Retry 2x then mark critical
+                </pre>
+                <div class="result-meta">
+                  <span>Progress: 128 / 256 bytes</span>
+                  <span>Last verify: pass (12:42:10)</span>
+                </div>
+              </div>
+            </div>
+            <div class="result-panels">
+              <div class="result-card">
+                <h4>Preview window</h4>
+                <pre>0000: 4A 46 49 46 00 01 01 01 00 60 00 60 00 00 FF E0
+0010: 00 10 01 00 2C 7A 10 55 20 00 0C 44 08 1C 70 90
+0020: FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
+...
+                </pre>
+                <div class="result-meta">
+                  <span>Diff vs device: 12 bytes pending</span>
+                  <span>Auto pad with 0xFF if file shorter than span</span>
+                </div>
+              </div>
+              <div class="result-card">
+                <h4>Job options</h4>
+                <div class="result-meta">
+                  <span>Queue mode: run when bus idle</span>
+                  <span>Write cycle wait: 5 ms</span>
+                  <span>Verify mismatch handler: capture snapshot</span>
+                </div>
+                <div class="control-row" style="gap:8px;flex-wrap:wrap;">
+                  <button class="ghost-btn">Run job now</button>
+                  <button class="ghost-btn">Export script</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <aside class="panel panel-right">
+        <div class="right-panel-section">
+          <h2>Pinned commands</h2>
+          <p class="muted">Instantly replay frequently used transactions.</p>
+          <div class="quick-list">
+            <div class="quick-item">
+              <span>Probe all addresses</span>
+              <button>Run</button>
+            </div>
+            <div class="quick-item">
+              <span>Read status word</span>
+              <button>Run</button>
+            </div>
+            <div class="quick-item">
+              <span>Toggle GPIO expander</span>
+              <button>Run</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-panel-section">
+          <h2>Live monitor</h2>
+          <div class="log-feed">
+            <div class="log-line" data-level="info">
+              <time>12:44:03</time>
+              <span>read 0x50 @ 0x0010 len 16 ok</span>
+            </div>
+            <div class="log-line" data-level="info">
+              <time>12:44:04</time>
+              <span>auto poll queued next read (2s)</span>
+            </div>
+            <div class="log-line" data-level="warn">
+              <time>12:42:18</time>
+              <span>retry write after NACK (attempt 2)</span>
+            </div>
+            <div class="log-line" data-level="error">
+              <time>12:41:52</time>
+              <span>verify mismatch job #35, diff saved</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-panel-section">
+          <h2>Watch values</h2>
+          <div class="quick-list">
+            <div class="quick-item">
+              <span>0x0010[7:0] = 0x4A</span>
+              <button>Focus</button>
+            </div>
+            <div class="quick-item">
+              <span>0x0020[3:0] = 0x5</span>
+              <button>Focus</button>
+            </div>
+            <div class="quick-item">
+              <span>GPIO bank A = 0b10101100</span>
+              <button>Focus</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="status-bar">
+      <div class="status-group">
+        <span><strong>Connected:</strong> CH341 - Addr 0x50</span>
+        <span class="status-pill">Bus idle</span>
+      </div>
+      <div class="status-group">
+        <span>Auto poll: on (2s)</span>
+        <span>Queued jobs: 3</span>
+        <span>Last error: verify mismatch</span>
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <header>
+        <h4>Queue Step Preview</h4>
+        <button class="modal-close" aria-label="Close">x</button>
+      </header>
+      <p class="muted">Confirm the payload before adding the step to the execution timeline.</p>
+      <pre>Operation : WRITE
+Target    : addr 0x50 reg 0x0020
+Payload   : 12 7A 90 44 00 00 45 4E
+Options   : stop on nack, wait 5 ms
+Expected  : ACK + verify on next step
+      </pre>
+      <footer>
+        <button class="ghost-btn" data-role="close-modal">Cancel</button>
+        <button class="primary-btn">Add step</button>
+      </footer>
+    </div>
+  </div>
+  <script>
+    const body = document.body;
+    const themeToggle = document.querySelector('[data-role="theme-toggle"]');
+    const tabs = document.querySelectorAll('.tab');
+    const panes = document.querySelectorAll('[data-pane]');
+    const adapterCards = document.querySelectorAll('[data-role="adapter-card"]');
+    const sequenceItems = document.querySelectorAll('[data-role="sequence-item"]');
+    const detailTitle = document.querySelector('[data-bind="sequence-title"]');
+    const detailInfo = document.querySelector('[data-bind="sequence-detail"]');
+    const detailPayload = document.querySelector('[data-bind="sequence-payload"]');
+    const detailExpected = document.querySelector('[data-bind="sequence-expected"]');
+    const lastResponse = document.querySelector('[data-bind="last-response"]');
+    const autoPoll = document.querySelector('[data-role="auto-poll"]');
+    const modalOverlay = document.querySelector('.modal-overlay');
+    const openPreview = document.querySelector('[data-role="open-preview"]');
+    const closeButtons = document.querySelectorAll('[data-role="close-modal"], .modal-close');
+    const eepromItems = document.querySelectorAll('[data-role="eeprom-item"]');
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isLight = body.classList.toggle('theme-light');
+        themeToggle.textContent = isLight ? 'Use Dark Theme' : 'Use Light Theme';
+      });
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const targetId = tab.dataset.target;
+        tabs.forEach((btn) => {
+          btn.classList.toggle('is-active', btn === tab);
+          btn.setAttribute('aria-selected', btn === tab);
+        });
+        panes.forEach((pane) => {
+          pane.classList.toggle('is-active', pane.id === targetId);
+        });
+      });
+    });
+
+    adapterCards.forEach((card) => {
+      card.addEventListener('click', () => {
+        adapterCards.forEach((other) => {
+          other.classList.remove('active');
+          other.setAttribute('aria-checked', 'false');
+        });
+        card.classList.add('active');
+        card.setAttribute('aria-checked', 'true');
+      });
+    });
+
+    function updateSequenceDetail(item) {
+      sequenceItems.forEach((btn) => btn.classList.remove('is-active'));
+      item.classList.add('is-active');
+      if (detailTitle) {
+        detailTitle.textContent = item.dataset.title || 'Step detail';
+      }
+      if (detailInfo) {
+        detailInfo.textContent = item.dataset.detail || '';
+      }
+      if (detailPayload) {
+        detailPayload.textContent = item.dataset.payload || '';
+      }
+      if (detailExpected) {
+        detailExpected.textContent = item.dataset.expected || '';
+      }
+      if (lastResponse && item.dataset.expected) {
+        lastResponse.textContent = 'Expected response\n' + item.dataset.expected;
+      }
+    }
+
+    sequenceItems.forEach((item) => {
+      item.addEventListener('click', () => updateSequenceDetail(item));
+    });
+
+    const initialSequence = document.querySelector('.sequence-item.is-active');
+    if (initialSequence) {
+      updateSequenceDetail(initialSequence);
+    }
+
+    const showModal = () => {
+      if (!modalOverlay) return;
+      modalOverlay.style.display = 'flex';
+      modalOverlay.setAttribute('aria-hidden', 'false');
+    };
+
+    const hideModal = () => {
+      if (!modalOverlay) return;
+      modalOverlay.style.display = 'none';
+      modalOverlay.setAttribute('aria-hidden', 'true');
+    };
+
+    if (openPreview) {
+      openPreview.addEventListener('click', (event) => {
+        event.preventDefault();
+        showModal();
+      });
+    }
+
+    closeButtons.forEach((btn) => btn.addEventListener('click', hideModal));
+
+    if (modalOverlay) {
+      modalOverlay.addEventListener('click', (event) => {
+        if (event.target === modalOverlay) {
+          hideModal();
+        }
+      });
+    }
+
+    if (autoPoll) {
+      autoPoll.addEventListener('click', (event) => {
+        event.preventDefault();
+        autoPoll.classList.toggle('is-active');
+      });
+    }
+
+    eepromItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        eepromItems.forEach((btn) => btn.classList.remove('is-active'));
+        item.classList.add('is-active');
+      });
+    });
+  </script>
+</body>
+</html>

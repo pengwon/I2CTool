@@ -1,83 +1,114 @@
-<svg width="800" height="620" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+<svg width="800" height="620" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif">
     <defs>
         <style>
             .window { fill: #2c3e50; stroke: #34495e; stroke-width: 1; }
             .title-bar { fill: #34495e; }
-            .title-text { fill: #ecf0f1; font-size: 14px; font-weight: bold; }
+            .title-text { fill: #ecf0f1; font-size: 15px; font-weight: 600; }
             .content-area { fill: #34495e; }
             .label { fill: #bdc3c7; font-size: 14px; }
-            .input-box { fill: #2c3e50; stroke: #7f8c8d; rx: 3; ry: 3; }
+            .input-box { fill: #2c3e50; stroke: #7f8c8d; rx: 4; ry: 4; }
             .input-text { fill: #ecf0f1; font-size: 14px; }
             .button { fill: #3498db; rx: 4; ry: 4; cursor: pointer; }
             .button:hover { fill: #5dade2; }
-            .button-text { fill: #ffffff; font-size: 14px; font-weight: bold; text-anchor: middle; pointer-events: none; }
+            .button-text { fill: #ffffff; font-size: 14px; font-weight: 600; text-anchor: middle; pointer-events: none; }
             .tab { fill: #2c3e50; cursor: pointer; }
             .tab-active { fill: #34495e; }
             .tab-text { fill: #bdc3c7; font-size: 14px; text-anchor: middle; pointer-events: none; }
-            .tab-text-active { fill: #ffffff; font-weight: bold; }
+            .tab-text-active { fill: #ffffff; font-weight: 600; }
             .log-area { fill: #1e2b37; }
-            .log-text { fill: #a1b2c3; font-family: 'Courier New', Courier, monospace; font-size: 13px; }
+            .log-text { fill: #a1b2c3; font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace; font-size: 13px; }
             .status-bar { fill: #2c3e50; }
             .status-text { fill: #7f8c8d; font-size: 12px; }
             .divider { stroke: #4a627a; stroke-width: 1; }
             .icon { fill: #ecf0f1; }
+            .dropdown-arrow { fill: none; stroke: #bdc3c7; stroke-width: 1.5; }
         </style>
     </defs>
     <!-- Window Frame -->
     <rect x="0" y="0" width="800" height="620" rx="8" ry="8" class="window"/>
     <rect x="1" y="1" width="798" height="35" class="title-bar" rx="8" ry="8"/>
-    <path class="icon" d="M 12 12 L 18 18 M 18 12 L 12 18" stroke="#ecf0f1" stroke-width="2"/> <!-- Simple I2C icon -->
-    <text x="35" y="23" class="title-text">I2C Debug Tool</text>
+    
+    <!-- I2C Logo in Title Bar -->
+    <g transform="translate(18, 18)">
+        <circle cx="0" cy="0" r="12" fill="#3498db" opacity="0.2"/>
+        <circle cx="0" cy="0" r="10" fill="none" stroke="#3498db" stroke-width="1.5"/>
+        <text x="0" y="4" text-anchor="middle" fill="#3498db" font-size="10px" font-weight="bold">I²C</text>
+    </g>
+    
+    <text x="40" y="23" class="title-text">I2C Debug Tool</text>
+    
     <!-- Control Buttons (macOS style) -->
     <circle cx="780" cy="18" r="6" fill="#f1c40f"/>
     <circle cx="760" cy="18" r="6" fill="#2ecc71"/>
     <circle cx="740" cy="18" r="6" fill="#e74c3c"/>
+    
     <!-- Tabs -->
     <rect x="20" y="45" width="120" height="30" class="tab-active" rx="5" ry="5"/>
     <text x="80" y="65" class="tab-text tab-text-active">通用读写</text>
     <rect x="150" y="45" width="120" height="30" class="tab" rx="5" ry="5"/>
     <text x="210" y="65" class="tab-text">EEPROM读写</text>
+    
     <!-- Main Content Area -->
     <rect x="20" y="75" width="760" height="525" class="content-area" rx="5" ry="5"/>
+    
     <!-- == General R/W Tab Content (Visible) == -->
     <g id="general-rw-tab">
         <!-- I2C Config Section -->
         <text x="40" y="110" class="label">I2C 总线:</text>
-        <rect x="150" y="95" width="150" height="25" class="input-box"/>
-        <text x="160" y="112" class="input-text">/dev/i2c-1</text>
-        <path d="M 285 105 l 5 5 l 5 -5" fill="none" stroke="#bdc3c7" stroke-width="1.5"/>
-        <text x="40" y="150" class="label">设备地址 (7-bit):</text>
-        <rect x="150" y="135" width="150" height="25" class="input-box"/>
-        <text x="160" y="152" class="input-text">0x50</text>
-        <text x="40" y="190" class="label">寄存器地址:</text>
-        <rect x="150" y="175" width="150" height="25" class="input-box"/>
-        <text x="160" y="192" class="input-text">0x001A</text>
+        <rect x="160" y="95" width="150" height="28" class="input-box"/>
+        <text x="170" y="114" class="input-text">/dev/i2c-1</text>
+        <path d="M 295 107 l 5 5 l 5 -5" class="dropdown-arrow"/>
+        
+        <text x="40" y="152" class="label">设备地址 (7-bit):</text>
+        <rect x="160" y="137" width="150" height="28" class="input-box"/>
+        <text x="170" y="156" class="input-text">0x50</text>
+        
+        <!-- Scan button -->
+        <rect x="320" y="137" width="110" height="28" class="button">
+            <title>扫描总线上的设备</title>
+        </rect>
+        <text x="375" y="156" class="button-text">扫描设备</text>
+        
+        <!-- Bus speed setting -->
+        <text x="40" y="194" class="label">总线速率:</text>
+        <rect x="160" y="179" width="150" height="28" class="input-box"/>
+        <text x="170" y="198" class="input-text">100 kHz</text>
+        <path d="M 295 191 l 5 5 l 5 -5" class="dropdown-arrow"/>
+        
+        <text x="40" y="236" class="label">寄存器地址:</text>
+        <rect x="160" y="221" width="150" height="28" class="input-box"/>
+        <text x="170" y="240" class="input-text">0x001A</text>
+        
         <!-- Address Width Radio Buttons -->
-        <circle cx="320" cy="187" r="6" stroke="#3498db" stroke-width="2" fill="#3498db"/>
-        <text x="330" y="192" class="label" fill="#ecf0f1">16-bit</text>
-        <circle cx="390" cy="187" r="6" stroke="#bdc3c7" stroke-width="2" fill="none"/>
-        <text x="400" y="192" class="label">8-bit</text>
-        <line x1="40" y1="220" x2="400" y2="220" class="divider"/>
+        <circle cx="340" cy="235" r="7" stroke="#3498db" stroke-width="2" fill="#3498db"/>
+        <text x="355" y="239" class="label" fill="#ecf0f1">16-bit</text>
+        <circle cx="420" cy="235" r="7" stroke="#bdc3c7" stroke-width="2" fill="none"/>
+        <text x="435" y="239" class="label">8-bit</text>
+        
+        <line x1="40" y1="260" x2="500" y2="260" class="divider"/>
+        
         <!-- Write Section -->
-        <text x="40" y="250" class="label">写入数据 (Hex):</text>
-        <rect x="150" y="235" width="250" height="25" class="input-box"/>
-        <text x="160" y="252" class="input-text">DE AD BE EF</text>
-        <rect x="420" y="235" width="100" height="28" class="button">
+        <text x="40" y="292" class="label">写入数据 (Hex):</text>
+        <rect x="160" y="277" width="250" height="28" class="input-box"/>
+        <text x="170" y="296" class="input-text">DE AD BE EF</text>
+        <rect x="420" y="277" width="100" height="28" class="button">
             <title>将数据写入指定寄存器</title>
         </rect>
-        <text x="470" y="254" class="button-text">写 入</text>
+        <text x="470" y="296" class="button-text">写 入</text>
+        
         <!-- Read Section -->
-        <text x="40" y="290" class="label">读取长度 (Bytes):</text>
-        <rect x="150" y="275" width="100" height="25" class="input-box"/>
-        <text x="160" y="292" class="input-text">16</text>
-        <rect x="420" y="273" width="100" height="28" class="button">
+        <text x="40" y="334" class="label">读取长度 (Bytes):</text>
+        <rect x="160" y="319" width="100" height="28" class="input-box"/>
+        <text x="170" y="338" class="input-text">16</text>
+        <rect x="420" y="319" width="100" height="28" class="button">
             <title>从指定寄存器读取数据</title>
         </rect>
-        <text x="470" y="292" class="button-text">读 取</text>
+        <text x="470" y="338" class="button-text">读 取</text>
+        
         <!-- Result/Log Area -->
-        <text x="40" y="340" class="label">读取结果 / 日志:</text>
-        <rect x="40" y="355" width="720" height="200" class="log-area" rx="5" ry="5"/>
-        <text x="55" y="375" class="log-text" id="log-content">
+        <text x="40" y="380" class="label">读取结果 / 日志:</text>
+        <rect x="40" y="390" width="720" height="185" class="log-area" rx="5" ry="5"/>
+        <text x="55" y="410" class="log-text" id="log-content">
             <tspan x="55" dy="0em">&gt; read(bus=1, addr=0x50, reg=0x001A, len=16)</tspan>
             <tspan x="55" dy="1.5em">SUCCESS: Read 16 bytes.</tspan>
             <tspan x="55" dy="1.5em">DATA: 4A 46 49 46 00 01 01 01 00 60 00 60 00 00 FF E0</tspan>
@@ -85,34 +116,51 @@
             <tspan x="55" dy="1.5em">SUCCESS: Wrote 4 bytes.</tspan>
         </text>
     </g>
-    <!-- == EEPROM R/W Tab Content (Concept, hidden by default) == -->
-    <!-- In a real app, you would use JS to show/hide this group -->
+    
+    <!-- == EEPROM R/W Tab Content (hidden by default) == -->
     <g id="eeprom-rw-tab" visibility="hidden">
         <!-- Config -->
         <text x="40" y="110" class="label">I2C 总线:</text>
-        <rect x="150" y="95" width="150" height="25" class="input-box"/>
-        <text x="160" y="112" class="input-text">/dev/i2c-1</text>
-        <text x="40" y="150" class="label">设备地址:</text>
-        <rect x="150" y="135" width="150" height="25" class="input-box"/>
-        <text x="160" y="152" class="input-text">0x50</text>
-        <text x="40" y="190" class="label">EEPROM 型号:</text>
-        <rect x="150" y="175" width="150" height="25" class="input-box"/>
-        <text x="160" y="192" class="input-text">AT24C32 (4KB)</text>
-        <path d="M 285 185 l 5 5 l 5 -5" fill="none" stroke="#bdc3c7" stroke-width="1.5"/>
+        <rect x="160" y="95" width="150" height="28" class="input-box"/>
+        <text x="170" y="114" class="input-text">/dev/i2c-1</text>
+        <path d="M 295 107 l 5 5 l 5 -5" class="dropdown-arrow"/>
+        
+        <text x="40" y="152" class="label">设备地址:</text>
+        <rect x="160" y="137" width="150" height="28" class="input-box"/>
+        <text x="170" y="156" class="input-text">0x50</text>
+        
+        <text x="40" y="194" class="label">EEPROM 型号:</text>
+        <rect x="160" y="179" width="150" height="28" class="input-box"/>
+        <text x="170" y="198" class="input-text">AT24C32 (4KB)</text>
+        <path d="M 295 191 l 5 5 l 5 -5" class="dropdown-arrow"/>
+        
         <!-- Actions -->
-        <rect x="420" y="95" width="150" height="30" class="button"><title>从EEPROM读取数据到下方视图</title></rect>
-        <text x="495" y="115" class="button-text">读取到视图</text>
-        <rect x="420" y="135" width="150" height="30" class="button"><title>将下方视图的数据写入EEPROM</title></rect>
-        <text x="495" y="155" class="button-text">写入到EEPROM</text>
-        <rect x="600" y="95" width="150" height="30" class="button" fill="#27ae60"><title>将读取的数据保存为文件</title></rect>
+        <rect x="430" y="95" width="150" height="30" class="button">
+            <title>从EEPROM读取数据到下方视图</title>
+        </rect>
+        <text x="505" y="115" class="button-text">读取到视图</text>
+        
+        <rect x="430" y="135" width="150" height="30" class="button">
+            <title>将下方视图的数据写入EEPROM</title>
+        </rect>
+        <text x="505" y="155" class="button-text">写入到EEPROM</text>
+        
+        <rect x="600" y="95" width="150" height="30" class="button" fill="#27ae60">
+            <title>将读取的数据保存为文件</title>
+        </rect>
         <text x="675" y="115" class="button-text">保存到文件...</text>
-        <rect x="600" y="135" width="150" height="30" class="button" fill="#e67e22"><title>从文件加载数据并写入EEPROM</title></rect>
-        <text x="700" y="155" class="button-text">从文件写入...</text>
+        
+        <rect x="600" y="135" width="150" height="30" class="button" fill="#e67e22">
+            <title>从文件加载数据并写入EEPROM</title>
+        </rect>
+        <text x="675" y="155" class="button-text">从文件写入...</text>
+        
         <!-- Progress Bar -->
-        <text x="420" y="190" class="label">进度:</text>
-        <rect x="470" y="180" width="280" height="15" class="input-box"/>
-        <rect x="472" y="182" width="190" height="11" fill="#3498db" rx="2" ry="2"/>
-        <text x="755" y="191" class="label" font-size="11px">68%</text>
+        <text x="430" y="194" class="label">进度:</text>
+        <rect x="480" y="179" width="270" height="20" class="input-box"/>
+        <rect x="482" y="181" width="183" height="16" fill="#3498db" rx="2" ry="2"/>
+        <text x="760" y="194" class="label" font-size="11px">68%</text>
+        
         <!-- Hex View -->
         <rect x="40" y="220" width="720" height="335" class="log-area" rx="5" ry="5"/>
         <text x="55" y="240" class="log-text">
@@ -125,8 +173,37 @@
             <tspan x="55" dy="1.5em"><tspan fill="#7f8c8d">...</tspan></tspan>
         </text>
     </g>
-    <!-- Status Bar -->
+    
+    <!-- 优化状态栏 -->
     <rect x="1" y="580" width="798" height="39" class="status-bar" rx="8" ry="8"/>
-    <text x="30" y="598" class="status-text">状态: 空闲</text>
-    <text x="650" y="598" class="status-text">总线: /dev/i2c-1 | 地址: 0x50</text>
+    
+    <!-- 左侧状态指示器：带有彩色指示灯 -->
+    <circle cx="20" cy="599" r="6" fill="#2ecc71"/> <!-- 绿色表示空闲/正常状态 -->
+    <text x="34" y="603" class="status-text">状态: 空闲</text>
+    
+    <!-- 中央分隔线 -->
+    <line x1="150" y1="588" x2="150" y2="611" stroke="#4a627a" stroke-width="1"/>
+    
+    <!-- 中间部分：最近操作 -->
+    <text x="165" y="603" class="status-text">最近操作: 读取成功 (4 bytes)</text>
+    
+    <!-- 右侧分隔线 -->
+    <line x1="380" y1="588" x2="380" y2="611" stroke="#4a627a" stroke-width="1"/>
+    
+    <!-- 右侧：连接信息，采用标签+值的形式以提高可读性 -->
+    <text x="395" y="603" class="status-text" fill="#95a5a6">总线:</text>
+    <text x="430" y="603" class="status-text">/dev/i2c-1</text>
+    
+    <text x="515" y="603" class="status-text" fill="#95a5a6">地址:</text>
+    <text x="550" y="603" class="status-text">0x50</text>
+    
+    <text x="600" y="603" class="status-text" fill="#95a5a6">速率:</text>
+    <text x="635" y="603" class="status-text">100 kHz</text>
+    
+    <!-- 右侧角落：刷新图标 -->
+    <g transform="translate(770, 599)" class="icon">
+      <circle cx="0" cy="0" r="9" fill="#34495e" stroke="#7f8c8d" stroke-width="1"/>
+      <path d="M -4,-2 A 5,5 0 1 1 -2,4" stroke="#95a5a6" stroke-width="1.5" fill="none"/>
+      <path d="M -2,4 L -4,2 L -6,4" stroke="#95a5a6" stroke-width="1.5" fill="none"/>
+    </g>
 </svg>
